@@ -1,7 +1,6 @@
 "use client";
 
 import { useCartStore } from "@/store/useCartStore";
-import { url } from "inspector";
 import Link from "next/link";
 
 const products = [

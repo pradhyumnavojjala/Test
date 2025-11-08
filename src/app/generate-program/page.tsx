@@ -2,7 +2,6 @@
 
 import { Button } from "@/Components/ui/button";
 import { Card } from "@/Components/ui/card";
-import { Input } from "@/Components/ui/input"; // For text input
 import { Textarea } from "@/Components/ui/textarea"; // For multi-line text input
 import { Switch } from "@/Components/ui/switch"; // For mode toggle
 import { vapi } from "@/lib/Vapi";

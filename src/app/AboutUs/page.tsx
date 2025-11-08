@@ -6,7 +6,7 @@ import { useUser } from "@clerk/nextjs";
 import ProfileHeader from "@/Components/ProfileHeader";
 import CornerElements from "@/Components/CornerElements";
 // Import all necessary icons
-import { Zap, AppleIcon, DumbbellIcon, Calculator, BookOpen, ChevronUp, Printer, Lightbulb, HelpCircle, ArrowUp, ZapIcon, Scale, Heart, Shield } from "lucide-react";
+import { Zap, AppleIcon, DumbbellIcon, Calculator, BookOpen, Printer, Lightbulb, HelpCircle, ArrowUp, Scale, Heart, Shield } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/Components/ui/tabs";
 import { Button } from "@/Components/ui/button";
 import { useState, useEffect, useMemo } from "react";

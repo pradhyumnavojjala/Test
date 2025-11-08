@@ -3,7 +3,7 @@
 import { useUser } from "@clerk/nextjs";
 import { useState, useEffect, useMemo, useCallback } from "react";
 import { PieChart, Pie, Cell } from "recharts";
-import { Dumbbell, Utensils, Edit, Save, X, CheckCircle, AlertCircle, ShoppingCart } from "lucide-react";
+import { Dumbbell, Utensils, Edit, Save, X, ShoppingCart } from "lucide-react";
 import { ClipLoader } from "react-spinners";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";

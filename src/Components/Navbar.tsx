@@ -2,7 +2,7 @@
 
 import { SignInButton, SignUpButton, UserButton, useUser } from "@clerk/nextjs";
 import Link from "next/link";
-import { Dumbbell, Home, LibraryBig, Panda, PhoneCall, ShoppingCart, Store, User } from "lucide-react";
+import { Dumbbell, Home, LibraryBig, Panda, PhoneCall, Store, User } from "lucide-react";
 import { Button } from "./ui/button";
 
 const Navbar = () => {
