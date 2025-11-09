@@ -9,7 +9,7 @@ import CornerElements from "@/Components/CornerElements";
 import { Zap, AppleIcon, DumbbellIcon, Calculator, BookOpen, Printer, Lightbulb, HelpCircle, ArrowUp, Scale, Heart, Shield } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/Components/ui/tabs";
 import { Button } from "@/Components/ui/button";
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect } from "react"; // Removed useMemo
 
 // --- EXPANDED DEMO DATA CONSTANTS ---
 
@@ -126,20 +126,26 @@ const StaticInfoPage = () => {
 
   const scrollToTop = () => window.scrollTo({ top: 0, behavior: "smooth" });
 
-  // --- FEATURE 1: BMR/TDEE CALCULATION LOGIC ---
-  const calculateBMR = useMemo(() => {
+  // --- FEATURE 1: BMR/TDEE CALCULATION LOGIC (FIXED) ---
+  
+  // Helper function to calculate BMR value
+  const calculateBMRValue = (w: number, h: number, a: number): number => {
     // Using the Revised Harris-Benedict Equation for a generic male estimate
     // BMR = 88.362 + (13.397 x W) + (4.799 x H) - (5.677 x A)
-    if (weight > 0 && height > 0 && age > 0) {
-        // Calculation is simple for demo, assume male for formula constants
-        const calculatedBMR = 88.362 + (13.397 * weight) + (4.799 * height) - (5.677 * age);
-        const roundedBMR = Math.round(calculatedBMR);
-        setBmr(roundedBMR);
-        // Default TDEE multiplier (e.g., 1.55 for moderate exercise 3-5 times/week)
-        setTdee(Math.round(roundedBMR * 1.55));
-        return roundedBMR;
+    if (w > 0 && h > 0 && a > 0) {
+        const calculatedBMR = 88.362 + (13.397 * w) + (4.799 * h) - (5.677 * a);
+        return Math.round(calculatedBMR);
     }
     return 0;
+  };
+
+  // FIX: Replaced useMemo/useEffect combination with a single stable useEffect for side effects
+  useEffect(() => {
+    const newBMR = calculateBMRValue(weight, height, age);
+    setBmr(newBMR);
+    // Default TDEE multiplier (e.g., 1.55 for moderate exercise 3-5 times/week)
+    setTdee(Math.round(newBMR * 1.55));
+    // Dependencies are the inputs that trigger the calculation
   }, [age, weight, height]);
 
 
@@ -174,7 +180,7 @@ const StaticInfoPage = () => {
           <ul className="space-y-2 text-sm">
             <li><a href="#nutrition" className="hover:text-primary transition-colors">Nutrition</a></li>
             <li><a href="#calories" className="hover:text-primary transition-colors">Calories</a></li>
-            <li><a href="#training" className="hover:text-primary transition-colors">Training</a></li> {/* Added link */}
+            <li><a href="#training" className="hover:text-primary transition-colors">Training</a></li>
             <li><a href="#equipment" className="hover:text-primary transition-colors">Equipment</a></li>
           </ul>
         </div>
@@ -206,7 +212,7 @@ const StaticInfoPage = () => {
                 Core Nutritional Pillars
               </h3>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6"> {/* Changed to 3 columns */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {NutritionGuide.map((item, index) => (
                 <div
                   key={index}
@@ -259,7 +265,7 @@ const StaticInfoPage = () => {
                 Calorie & Energy Fundamentals
               </h3>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"> {/* Changed to 4 columns */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               {CalorieBasics.map((item, index) => (
                 <div
                   key={index}
@@ -385,7 +391,7 @@ const StaticInfoPage = () => {
                 Essential Home Workout Gear
               </h3>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"> {/* Changed to 4 columns */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               {EquipmentGuide.map((item, index) => (
                 <div
                   key={index}

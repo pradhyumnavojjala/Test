@@ -2,7 +2,7 @@
 
 "use client";
 import { useState, useEffect } from "react";
-import { collection, getDocs, DocumentData } from "firebase/firestore"; // Import DocumentData for clarity
+import { collection, getDocs } from "firebase/firestore"; // Import DocumentData for clarity
 import { db } from "@/firebase-config";
 
 // --- Type Definitions (Based on previous context) ---

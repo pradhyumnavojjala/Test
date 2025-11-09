@@ -39,7 +39,7 @@ interface VapiMessage {
   transcript?: string;
   role?: "user" | "assistant";
   // Fallback signature to allow other Vapi fields without 'any'
-  [key: string]: any; 
+  [key: string]: unknown; 
 }
 
 // Interface for Vapi Errors

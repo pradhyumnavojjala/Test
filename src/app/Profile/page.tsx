@@ -48,14 +48,6 @@ interface UserDetails {
   exerciseLevel: string;
 }
 
-interface ShopItem {
-  id: number;
-  name: string;
-  description: string;
-  price: string;
-  image: string;
-}
-
 // --------------------- FITNESS PLAN HOOK ---------------------
 const useFitnessPlan = () => {
   const [currentPlan, setCurrentPlan] = useState<FitnessPlan | null>(null);
