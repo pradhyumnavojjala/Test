@@ -1,15 +1,20 @@
+// src/app/generate-program/page.tsx
+
 "use client";
 
+// IMPORTS: Added 'Image' from next/image
 import { Button } from "@/Components/ui/button";
 import { Card } from "@/Components/ui/card";
-import { Textarea } from "@/Components/ui/textarea"; // For multi-line text input
-import { Switch } from "@/Components/ui/switch"; // For mode toggle
+import { Textarea } from "@/Components/ui/textarea"; 
+import { Switch } from "@/Components/ui/switch"; 
+import Image from "next/image"; // <--- NEW: Import Image for optimization
 import { vapi } from "@/lib/Vapi";
 import { useUser } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { Mic, MicOff, User, Bot, ArrowLeft, Loader2, MessageSquare, Send } from "lucide-react";
 
+// --- TYPE DEFINITIONS (FIXING BUILD ERRORS) ---
 interface Meal {
   name: string;
   foods: string[];
@@ -21,13 +26,36 @@ interface DietPlan {
   meals: Meal[];
 }
 
+// Interface for the messages stored in state (user or assistant)
+interface ChatMessage {
+    content: string;
+    role: "user" | "assistant";
+}
+
+// Interface for the complex Vapi message object
+interface VapiMessage {
+  type: string;
+  transcriptType?: "final" | "partial";
+  transcript?: string;
+  role?: "user" | "assistant";
+  // Fallback signature to allow other Vapi fields without 'any'
+  [key: string]: any; 
+}
+
+// Interface for Vapi Errors
+interface VapiError extends Error {
+    message: string;
+    // Vapi errors can have other specific fields
+    code?: string | number; 
+}
+// --- END TYPE DEFINITIONS ---
+
 const demoDietPlans: DietPlan[] = [
   { name: "Plan A", dailyCalories: 2000, meals: [{ name: "Breakfast", foods: ["Eggs", "Oatmeal"] }] },
-  { name: "Plan B", dailyCalories: 1800, meals: [{ name: "Breakfast", foods: ["Smoothie", "Toast"] }] },
-  { name: "Plan C", dailyCalories: 2200, meals: [{ name: "Breakfast", foods: ["Pancakes", "Fruits"] }] },
+  { name: "Plan B", dailyCalories: 1800, meals: [{ name: "Smoothie", foods: ["Smoothie", "Toast"] }] },
+  { name: "Plan C", dailyCalories: 2200, meals: [{ name: "Dinner", foods: ["Pancakes", "Fruits"] }] },
 ];
 
-// Mock AI responses for text mode (replace with real API in production)
 const mockResponses = [
   "That's great! Tell me more about your fitness goals.",
   "Understood. What’s your preferred diet type?",
@@ -39,12 +67,15 @@ const GenerateProgramPage = () => {
   const [callActive, setCallActive] = useState(false);
   const [connecting, setConnecting] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
-  const [messages, setMessages] = useState<any[]>([]);
+  
+  // FIXED: State initialized with ChatMessage[]
+  const [messages, setMessages] = useState<ChatMessage[]>([]); 
+  
   const [callEnded, setCallEnded] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [isTextMode, setIsTextMode] = useState(false); // Toggle for text mode
-  const [textInput, setTextInput] = useState(""); // For user text input
-  const [isTyping, setIsTyping] = useState(false); // Simulate AI typing
+  const [isTextMode, setIsTextMode] = useState(false); 
+  const [textInput, setTextInput] = useState(""); 
+  const [isTyping, setIsTyping] = useState(false); 
 
   const { user } = useUser();
   const router = useRouter();
@@ -81,7 +112,7 @@ const GenerateProgramPage = () => {
 
   // Handle text mode conversation end (after a few messages)
   useEffect(() => {
-    if (isTextMode && messages.length >= 5 && !callEnded) { // End after 5 messages
+    if (isTextMode && messages.length >= 5 && !callEnded) { 
       setCallEnded(true);
       const randomIndex = Math.floor(Math.random() * demoDietPlans.length);
       setSelectedDietPlan(demoDietPlans[randomIndex]);
@@ -106,17 +137,30 @@ const GenerateProgramPage = () => {
       };
       const handleSpeechStart = () => setIsSpeaking(true);
       const handleSpeechEnd = () => setIsSpeaking(false);
-      const handleMessage = (message: any) => {
+      
+      // FIXED: Used VapiMessage type
+      const handleMessage = (message: VapiMessage) => { 
         if (message.type === "transcript" && message.transcriptType === "final") {
-          const newMessage = { content: message.transcript, role: message.role };
+          const newMessage: ChatMessage = { 
+              content: message.transcript || "", 
+              role: (message.role as "user" | "assistant") || "assistant" 
+          };
           setMessages((prev) => [...prev, newMessage]);
         }
       };
-      const handleError = (error: any) => { 
-        console.log("Vapi Error", error); 
+      
+      // FIXED: Used VapiError type
+      const handleError = (error: VapiError) => { 
+        console.log("Vapi Error:", error); 
         setConnecting(false); 
         setCallActive(false); 
-        setError("Failed to connect. Please try again."); 
+        
+        // Custom check for the NotAllowedError
+        if (error.name === "NotAllowedError") {
+             setError("Microphone access denied. Please allow microphone permissions and try again.");
+        } else {
+             setError("Failed to connect. Please try again."); 
+        }
       };
 
       vapi.on("call-start", handleCallStart)
@@ -138,7 +182,8 @@ const GenerateProgramPage = () => {
   }, [isTextMode]);
 
   const toggleCall = async () => {
-    if (isTextMode) return; // Text mode doesn't use calls
+    if (isTextMode) return; 
+    
     if (callActive) {
       vapi.stop();
     } else {
@@ -148,6 +193,11 @@ const GenerateProgramPage = () => {
         setCallEnded(false);
         setError(null);
 
+        // Pre-check for microphone (Optional but good UX)
+        if (!await navigator.mediaDevices.getUserMedia({ audio: true })) {
+            throw new Error("Microphone permission required.");
+        }
+        
         const fullName = user?.firstName ? `${user.firstName} ${user.lastName || ""}`.trim() : "There";
 
         await vapi.start(process.env.NEXT_PUBLIC_VAPI_WORKFLOW_ID!, {
@@ -159,7 +209,12 @@ const GenerateProgramPage = () => {
       } catch (error) {
         console.log("Failed to start call", error);
         setConnecting(false);
-        setError("Unable to start call. Check your connection.");
+        // The type of 'error' here is unknown, so handle it generally
+        if (error instanceof Error && error.name === "NotAllowedError") {
+             setError("Microphone access denied. Please allow microphone permissions and try again.");
+        } else {
+             setError("Unable to start call. Check your connection.");
+        }
       }
     }
   };
@@ -167,17 +222,17 @@ const GenerateProgramPage = () => {
   // Handle sending text messages
   const sendTextMessage = async () => {
     if (!textInput.trim()) return;
-    const userMessage = { content: textInput, role: "user" };
+    
+    const userMessage: ChatMessage = { content: textInput, role: "user" }; 
     setMessages((prev) => [...prev, userMessage]);
     setTextInput("");
     setIsTyping(true);
 
-    // Simulate AI response (replace with real API call)
     setTimeout(() => {
       const aiResponse = mockResponses[Math.floor(Math.random() * mockResponses.length)];
       setMessages((prev) => [...prev, { content: aiResponse, role: "assistant" }]);
       setIsTyping(false);
-    }, 1500); // 1.5s delay for realism
+    }, 1500); 
   };
 
   return (
@@ -194,7 +249,7 @@ const GenerateProgramPage = () => {
           Back
         </Button>
         <h1 className="text-lg font-semibold">CodeFlex AI Assistant</h1>
-        <div className="w-10" /> {/* Spacer for centering */}
+        <div className="w-10" /> 
       </header>
 
       <div className="container mx-auto px-6 py-8 flex-1 max-w-6xl">
@@ -224,7 +279,7 @@ const GenerateProgramPage = () => {
 
         {/* Error Display */}
         {error && (
-          <div className="mb-6 p-4 bg-destructive/10 border border-destructive/20 rounded-lg text-destructive text-center">
+          <div className="mb-6 p-4 bg-destructive/10 border border-destructive/20 rounded-lg text-destructive text-center font-medium">
             {error}
           </div>
         )}
@@ -236,7 +291,15 @@ const GenerateProgramPage = () => {
             <div className="flex flex-col items-center">
               <div className="w-36 h-36 relative mb-6">
                 <div className={`absolute inset-0 bg-primary/20 rounded-full blur-xl transition-opacity ${isTextMode ? "opacity-0" : isSpeaking ? "opacity-100 animate-pulse" : "opacity-0"}`} />
-                <img src="/1p.jpg" alt="AI Assistant" className="w-full h-full object-cover rounded-full border-4 border-primary/20" />
+                {/* Image FIX: Replaced <img> with <Image /> */}
+                <Image 
+                    src="/1.jpg" 
+                    alt="AI Assistant" 
+                    fill 
+                    style={{ objectFit: 'cover' }}
+                    className="rounded-full border-4 border-primary/20" 
+                    sizes="(max-width: 768px) 100vw, 36vw"
+                />
                 <div className="absolute bottom-2 right-2 bg-primary rounded-full p-2">
                   <Bot className="w-5 h-5 text-white" />
                 </div>
@@ -262,7 +325,15 @@ const GenerateProgramPage = () => {
           <Card className="bg-card/90 backdrop-blur-sm border shadow-lg p-8 relative transition-all hover:shadow-xl">
             <div className="flex flex-col items-center">
               <div className="w-36 h-36 relative mb-6">
-                <img src={user?.imageUrl || "/default-user.jpg"} alt="User" className="w-full h-full object-cover rounded-full border-4 border-muted" />
+                {/* Image FIX: Replaced <img> with <Image /> */}
+                <Image 
+                    src={user?.imageUrl || "/5.jpg"} 
+                    alt="User profile picture" 
+                    fill 
+                    style={{ objectFit: 'cover' }}
+                    className="rounded-full border-4 border-muted" 
+                    sizes="(max-width: 768px) 100vw, 36vw"
+                />
                 <div className="absolute bottom-2 right-2 bg-muted rounded-full p-2">
                   <User className="w-5 h-5 text-foreground" />
                 </div>

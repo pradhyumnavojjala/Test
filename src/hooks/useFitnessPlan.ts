@@ -3,7 +3,6 @@ import { useState, useEffect } from "react";
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "@/firebase-config";
 
-
 export const useFitnessPlan = () => {
   const [currentPlan, setCurrentPlan] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);

@@ -1,5 +1,6 @@
 import {UserResource} from "@clerk/types"
 import CornerElements from "./CornerElements"
+import Image from "next/image";
 
 const ProfileHeader = ({user}: {user:UserResource |null |undefined}) => {
   if (!user) return null
@@ -10,13 +11,18 @@ const ProfileHeader = ({user}: {user:UserResource |null |undefined}) => {
       <div className="flex flex-col md:flex-row items-start md:items-center gap-6">
         <div className="relative">
           {user.imageUrl ? (
+            // FIX START: Use 'fill', 'style' and 'sizes' for optimization
             <div className="relative w-24 h-24 overflow-hidden rounded-lg">
-              <img
+              <Image
                 src={user.imageUrl}
                 alt={user.fullName || "Profile"}
-                className="w-full h-full object-cover"
+                fill // ✅ NEW: Fills the parent <div> (w-24 h-24)
+                style={{ objectFit: 'cover' }} // ✅ NEW: Equivalent to object-cover CSS
+                className="rounded-lg" // Keeping only necessary class for border-radius
+                sizes="6rem" // NEW: 6rem = 96px (the size of w-24)
               />
             </div>
+            // FIX END
           ) : (
             <div className="w-24 h-24 rounded-lg bg-gradient-to-br from-primary/30 to-secondary/30 flex items-center justify-center">
               <span className="text-3xl font-bold text-primary">

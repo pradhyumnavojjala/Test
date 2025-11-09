@@ -3,8 +3,26 @@ export const runtime = "nodejs";
 import { NextResponse } from "next/server";
 import nodemailer from "nodemailer";
 
+// 1. DEFINE THE INTERFACES HERE (OUTSIDE THE FUNCTION)
+// Define the structure of a single item in the order
+interface OrderItem {
+  name: string;
+  quantity: number;
+  price: number;
+}
+
+// Define the expected structure of the entire request body
+interface OrderRequest {
+    items: OrderItem[];
+    total: number;
+    email: string;
+}
+
 export async function POST(request: Request) {
-  const { items, total, email } = await request.json();
+  
+  // 2. TYPE THE REQUEST BODY WHEN PARSING IT
+  // This resolves the initial 'any' error for the destructured variables.
+  const { items, total, email }: OrderRequest = await request.json();
 
   try {
     const transporter = nodemailer.createTransport({
@@ -23,7 +41,7 @@ export async function POST(request: Request) {
 Your order has been confirmed! 🛍️
 
 Items:
-${items.map((i: any) => `${i.name} x${i.quantity} - ₹${i.price}`).join("\n")}
+${items.map((i) => `${i.name} x${i.quantity} - ₹${i.price}`).join("\n")}
 
 Total: ₹${total}
 

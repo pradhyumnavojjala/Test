@@ -13,6 +13,7 @@ import {
 import { USER_PROGRAMS } from "@/constants";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "./ui/card";
 import { Button } from "./ui/button";
+import Image from "next/image";
 
 const UserPrograms = () => {
   return (
