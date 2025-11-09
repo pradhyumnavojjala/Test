@@ -390,17 +390,15 @@ const GenerateProgramPage = () => {
         {isTextMode && (
           <div className="w-full mb-6 flex gap-4">
             <Textarea
-              value={textInput}
-              onChange={(e) => setTextInput(e.target.value)}
-              placeholder="Type your message here..."
-              className="flex-1 resize-none"
-              rows={2}
-              onKeyDown={(e) => {
-                if (e.key === "Enter" && !e.shiftKey) {
-                  e.preventDefault();
-                  sendTextMessage();
-                }
-              }}
+  // FIX 1: Type the change event
+  onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setTextInput(e.target.value)}
+  // FIX 2: Type the keyboard event
+  onKeyDown={(e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      sendTextMessage();
+    }
+  }}
             />
             <Button
               onClick={sendTextMessage}
