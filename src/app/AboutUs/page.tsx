@@ -142,10 +142,6 @@ const StaticInfoPage = () => {
     return 0;
   }, [age, weight, height]);
 
-  useEffect(() => {
-    calculateBMR; // Recalculate BMR/TDEE when inputs change
-  }, [age, weight, height, calculateBMR]);
-
 
   return (
     <section className="relative z-10 pt-12 pb-32 flex-grow container mx-auto px-4 bg-gradient-to-br from-background via-muted/10 to-primary/5 min-h-screen">

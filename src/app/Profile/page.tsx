@@ -3,7 +3,7 @@
 import { useUser } from "@clerk/nextjs";
 import { useState, useEffect, useMemo, useCallback } from "react";
 import { PieChart, Pie, Cell } from "recharts";
-import { Dumbbell, Utensils, Edit, Save, X, ShoppingCart } from "lucide-react";
+import { Dumbbell, Utensils, Edit, Save, X,  } from "lucide-react";
 import { ClipLoader } from "react-spinners";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -338,7 +338,7 @@ const plans: FitnessPlan[] = [
 
   // 4. Plan: 5-Day Powerbuilding (Advanced)
   {
-      name: "5-Day Powerbuilding (Advanced)",
+      name: "Day Powerbuilding (Advanced)",
       days: [
           {
               day: "Day 1: Heavy Chest & Triceps",
@@ -414,7 +414,7 @@ const plans: FitnessPlan[] = [
 
   // 5. Plan: 6-Day PPL (Push, Pull, Legs) Split
   {
-      name: "6-Day PPL (Push, Pull, Legs)",
+      name: "Day PPL (Push, Pull, Legs)",
       days: [
           {
               day: "Day 1: Push (Chest, Shoulders, Triceps)",
@@ -508,7 +508,7 @@ const plans: FitnessPlan[] = [
 
   // 6. Plan: 7-Day Marathon Prep
   {
-      name: "7-Day Marathon Prep (Maintenance)",
+      name: "Day Marathon Prep (Maintenance)",
       days: [
           {
               day: "Day 1: Easy Run & Mobility",
@@ -603,7 +603,7 @@ const plans: FitnessPlan[] = [
 
   // 7. Plan: 5-Day Functional Training
   {
-      name: "5-Day Functional Training",
+      name: "Day Functional Training",
       days: [
           {
               day: "Day 1: Full Body Power",
@@ -679,7 +679,7 @@ const plans: FitnessPlan[] = [
 
   // 8. Plan: 6-Day Hybrid Calisthenics & Weights
   {
-      name: "6-Day Hybrid Calisthenics & Weights",
+      name: "Day Hybrid Calisthenics & Weights",
       days: [
           {
               day: "Day 1: Calisthenics Push",
@@ -768,7 +768,7 @@ const plans: FitnessPlan[] = [
 
   // 9. Plan: 7-Day Minimal Equipment (Home)
   {
-      name: "7-Day Minimal Equipment (Home)",
+      name: "Day Minimal Equipment (Home)",
       days: [
           {
               day: "Day 1: Upper Body Strength",
@@ -870,7 +870,7 @@ const plans: FitnessPlan[] = [
 
   // 10. Plan: 6-Day Bro Split (Classic Bodybuilding)
   {
-      name: "6-Day Bro Split (Classic BB)",
+      name: "Day Bro Split (Classic BB)",
       days: [
           {
               day: "Day 1: Chest",
@@ -961,7 +961,7 @@ const plans: FitnessPlan[] = [
 
   // 11. Plan: 5-Day Kettlebell-Only HIIT
   {
-      name: "5-Day Kettlebell-Only HIIT",
+      name: "Day Kettlebell-Only HIIT",
       days: [
           {
               day: "Day 1: Full Body Blast",
@@ -1036,7 +1036,7 @@ const plans: FitnessPlan[] = [
 
   // 12. Plan: 6-Day Powerlifting Focus
   {
-      name: "6-Day Powerlifting Focus",
+      name: "Day Powerlifting Focus",
       days: [
           {
               day: "Day 1: Heavy Squat & Light Bench",
@@ -1126,7 +1126,7 @@ const plans: FitnessPlan[] = [
 
   // 13. Plan: 5-Day Vegan Full Body
   {
-      name: "5-Day Vegan Full Body",
+      name: "Day Vegan Full Body",
       days: [
           {
               day: "Day 1: Full Body Strength",
@@ -1217,8 +1217,6 @@ const plans: FitnessPlan[] = [
 
 };
 
-// --------------------- SHOP COMPONENT ---------------------
-
 // --------------------- MAIN PROFILE PAGE ---------------------
 export default function ProfilePage() {
   const { user } = useUser();
@@ -1293,7 +1291,7 @@ export default function ProfilePage() {
     } catch (error) {
       console.error("Failed to update progress:", error);
     }
-  }, [setCurrentPlan, user]);
+  }, [setCurrentPlan, user, currentPlan]);
 
   const age = useMemo(() => {
     if (!editableDetails?.dob) return 0;
