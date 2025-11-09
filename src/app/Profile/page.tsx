@@ -1218,35 +1218,6 @@ const plans: FitnessPlan[] = [
 };
 
 // --------------------- SHOP COMPONENT ---------------------
-const ShopSection: React.FC = () => {
-  const shopItems: ShopItem[] = [
-    {
-      id: 1,
-      name: 'Adjustable Dumbbells',
-      description: 'Perfect for home workouts. Durable and versatile.',
-      price: '$49.99',
-      image: 'https://via.placeholder.com/300x200?text=Dumbbells',
-    },
-    // Add more items...
-  ];
-
-  return (
-    <div className="mt-8">
-      <h3 className="text-lg font-bold mb-4 flex items-center gap-2"><ShoppingCart size={20} /> Fitness Shop</h3>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        {shopItems.map((item) => (
-          <div key={item.id} className="card border rounded-lg p-4 shadow hover:shadow-lg transition">
-            <img src={item.image} alt={item.name} className="w-full h-32 object-cover rounded mb-2" />
-            <h4 className="font-semibold">{item.name}</h4>
-            <p className="text-sm text-gray-600">{item.description}</p>
-            <p className="text-green-600 font-bold">{item.price}</p>
-            <button className="mt-2 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Add to Cart</button>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-};
 
 // --------------------- MAIN PROFILE PAGE ---------------------
 export default function ProfilePage() {
@@ -1256,7 +1227,7 @@ export default function ProfilePage() {
   const [editableDetails, setEditableDetails] = useState<UserDetails | null>(null);
   const [loadingUser, setLoadingUser] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [activeTab, setActiveTab] = useState<'profile' | 'shop'>('profile');
+  const [activeTab] = useState<'profile' | 'shop'>('profile');
   
 
   useEffect(() => {
@@ -1322,7 +1293,7 @@ export default function ProfilePage() {
     } catch (error) {
       console.error("Failed to update progress:", error);
     }
-  }, [currentPlan, user]);
+  }, [setCurrentPlan, user]);
 
   const age = useMemo(() => {
     if (!editableDetails?.dob) return 0;

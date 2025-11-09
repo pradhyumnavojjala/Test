@@ -8,6 +8,7 @@ import AuthPage from "@/AuthPage";
 import { useEffect, useState } from "react";
 import { onAuthStateChanged, User } from "firebase/auth";
 import { auth } from "@/firebase-config"; // 👈 Make sure you export `auth` from firebase-config
+import Image from "next/image";
 
 const HomePage = () => {
   const [user, setUser] = useState<User | null>(null);
@@ -135,7 +136,7 @@ const HomePage = () => {
               {/* Image Container */}
               <div className="relative aspect-square max-w-lg mx-auto">
                 <div className="relative overflow-hidden rounded-lg bg-cyber-black shadow-2xl">
-                  <img
+                  <Image
                     src="/AI.png"
                     alt="AI Fitness Coach Illustration"
                     className="size-full object-cover object-center"
