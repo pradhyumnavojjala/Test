@@ -1,15 +1,19 @@
 "use client";
 
+import { useUser } from "@clerk/nextjs";
 import { useCartStore } from "@/store/useCartStore";
 
+
 export default function CartPage() {
+  const { user } = useUser();
   const { items, removeItem, clearCart, total } = useCartStore();
+
   const handleConfirmOrder = async () => {
     if (items.length === 0) {
       alert("Your cart is empty!");
       return;
     }
-  
+
     try {
       const response = await fetch("/api/sendOrderEmail", {
         method: "POST",
@@ -17,10 +21,11 @@ export default function CartPage() {
         body: JSON.stringify({
           items,
           total,
-          email: "pradhyumnavojjala@gmail.com", // later we’ll replace this with the user’s real email
+          email: user?.emailAddresses[0]?.emailAddress, // user’s actual email
+
         }),
       });
-  
+
       if (response.ok) {
         alert("✅ Order confirmed! You will receive an email shortly. Pay when delivered.");
         clearCart();

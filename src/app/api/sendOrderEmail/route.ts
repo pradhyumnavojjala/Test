@@ -1,59 +1,68 @@
-export const runtime = "nodejs";
-
-import { NextResponse } from "next/server";
 import nodemailer from "nodemailer";
+import { NextResponse } from "next/server";
 
-// 1. DEFINE THE INTERFACES HERE (OUTSIDE THE FUNCTION)
-// Define the structure of a single item in the order
-interface OrderItem {
-  name: string;
-  quantity: number;
-  price: number;
-}
-
-// Define the expected structure of the entire request body
-interface OrderRequest {
-    items: OrderItem[];
-    total: number;
-    email: string;
-}
-
-export async function POST(request: Request) {
-  
-  // 2. TYPE THE REQUEST BODY WHEN PARSING IT
-  // This resolves the initial 'any' error for the destructured variables.
-  const { items, total, email }: OrderRequest = await request.json();
-
+export async function POST(req: Request) {
   try {
+    const { items, total, email } = await req.json();
+
     const transporter = nodemailer.createTransport({
       service: "gmail",
       auth: {
-        user: process.env.GMAIL_USER,
-        pass: process.env.GMAIL_PASS,
+        user: process.env.GMAIL_USER, // your Gmail
+        pass: process.env.GMAIL_PASS, // your app password
       },
     });
 
-    const mailOptions = {
+    const orderList = items
+      .map((item: any) => `${item.name} x${item.quantity} - ₹${item.price}`)
+      .join("\n");
+
+    // Email to customer
+    const customerMail = {
       from: process.env.GMAIL_USER,
       to: email,
-      subject: "Order Confirmation - NutriFit Store",
-      text: `
-Your order has been confirmed! 🛍️
+      subject: "✅ NutriFit Order Confirmation",
+      text: `Hi there! 👋
 
-Items:
-${items.map((i) => `${i.name} x${i.quantity} - ₹${i.price}`).join("\n")}
+Your order has been confirmed successfully. Here’s a summary:
+
+${orderList}
+
+Total Amount: ₹${total}
+
+Your order will be delivered soon.
+Please pay upon delivery. 💵
+
+Thank you for shopping with NutriFit 💪
+— Team NutriFit`,
+    };
+
+    // Email to you (the owner)
+    const ownerMail = {
+      from: process.env.GMAIL_USER,
+      to: process.env.GMAIL_USER, // 👈 same email (you)
+      subject: "📦 New NutriFit Order Received",
+      text: `Hey Owner 👑,
+
+You just received a new order!
+
+Customer Email: ${email}
+
+Items Ordered:
+${orderList}
 
 Total: ₹${total}
 
-Your order will be delivered soon.
-Please pay when it is delivered. 💵
-      `,
+Time to process and deliver this order 🚚`,
     };
 
-    await transporter.sendMail(mailOptions);
-    return NextResponse.json({ success: true });
+    // Send both emails
+    await transporter.sendMail(customerMail);
+    await transporter.sendMail(ownerMail);
+
+    return NextResponse.json({ message: "Emails sent successfully" });
   } catch (error) {
-    console.error("Email error:", error);
-    return NextResponse.json({ success: false, error: String(error) }, { status: 500 });
+    console.error("Error sending email:", error);
+    return NextResponse.json({ error: "Failed to send email" }, { status: 500 });
   }
 }

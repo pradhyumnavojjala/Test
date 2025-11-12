@@ -3,7 +3,7 @@
 import { useUser } from "@clerk/nextjs";
 import { useState, useEffect, useMemo, useCallback } from "react";
 import { PieChart, Pie, Cell } from "recharts";
-import { Dumbbell, Utensils, Edit, Save, X,  } from "lucide-react";
+import { Dumbbell, Utensils, Edit, Save, X, Printer,  } from "lucide-react";
 import { ClipLoader } from "react-spinners";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -14,6 +14,7 @@ import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/
 import { db } from "@/firebase-config";
 import { doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
 import { uploadRandomPlan } from "@/utils/uploadRandomPlan";
+import { Button } from "@/Components/ui/button";
 
 // Types
 interface Exercise {
@@ -1200,7 +1201,7 @@ const plans: FitnessPlan[] = [
       const randomIndex = Math.floor(Math.random() * plans.length);
       setCurrentPlan(plans[randomIndex]);
       setIsLoading(false);
-    }, 1000);
+    }, 30000);
 
     return () => clearTimeout(timer);
   }, []);
@@ -1320,6 +1321,9 @@ export default function ProfilePage() {
               <button onClick={() => setIsEditing(!isEditing)} className="text-blue-500 hover:text-blue-700 transition-colors">
                 <Edit size={20} />
               </button>
+              <Button variant="outline" size="sm" onClick={() => window.print()} className="flex items-center gap-1 hover:bg-primary/10 transition-colors">
+            <Printer className="size-4" /> Print Guide
+          </Button>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
