@@ -1,9 +1,26 @@
-import nodemailer from "nodemailer";
-import { NextResponse } from "next/server";
+// ./src/app/api/sendOrderEmail/route.ts
 
-export async function POST(req: Request) {
+import nodemailer from "nodemailer";
+import { NextResponse, NextRequest } from "next/server"; // <-- 1. NextRequest is imported for proper typing
+
+// Define the structure of a single item we expect in the cart
+interface OrderItem {
+  name: string;
+  quantity: number;
+  price: number;
+  // Use 'unknown' to safely allow for other properties without using 'any'
+  [key: string]: unknown; 
+}
+
+// 2. Type the request parameter as NextRequest
+export async function POST(req: NextRequest) {
   try {
-    const { items, total, email } = await req.json();
+    // 3. Define the expected shape of the data retrieved from req.json()
+    const { items, total, email } = (await req.json()) as {
+      items: OrderItem[]; // <-- Items is correctly typed
+      total: number;
+      email: string;
+    };
 
     const transporter = nodemailer.createTransport({
       service: "gmail",
@@ -14,7 +31,8 @@ export async function POST(req: Request) {
     });
 
     const orderList = items
-      .map((item: any) => `${item.name} x${item.quantity} - ₹${item.price}`)
+      // 4. FIX: Use the OrderItem interface in the map function argument (resolves line 17 error)
+      .map((item: OrderItem) => `${item.name} x${item.quantity} - ₹${item.price}`)
       .join("\n");
 
     // Email to customer
